@@ -5,7 +5,7 @@ Follows the [search plugin guidlines](https://github.com/qbittorrent/qBittorrent
 
 # Installation
 Install the plugin by:
-<kbd>Search tab</kbd> 🡪 <kbd>Search Plugins</kbd> 🡪 <kbd>Install a new one</kbd> 🡪 Selecting the `bakabt.py` file.
+<kbd>Search tab</kbd> 🡪 <kbd>Search Plugins</kbd> 🡪 <kbd>Install a new one</kbd> 🡪 Selecting the `zooqle.py` file.
 
 Or by manually copying the `zooqle.py` to the following location:
   * Linux: `~/.local/share/data/qBittorrent/nova/engines/zooqle.py`
