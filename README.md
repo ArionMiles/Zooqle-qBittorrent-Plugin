@@ -11,3 +11,6 @@ Or by manually copying the `bakabt.py` to the following location:
   * Linux: `~/.local/share/data/qBittorrent/nova/engines/bakabt.py`
   * Mac: ``~/Library/Application Support/qBittorrent/nova/engines/bakabt.py`
   * Windows: `C:\Documents and Settings\%USERPROFILE%\Local Settings\Application Data\qBittorrent\nova\engines\bakabt.py`
+
+# License
+MIT License. See LICENSE file.
