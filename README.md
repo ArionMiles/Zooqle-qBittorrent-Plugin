@@ -1,4 +1,4 @@
-# Zooqle-qBittorrent-Plugin
+# Zooqle qBittorrent Plugin
 Zooqle search plugin for qBittorrent
 Uses `xml.mini.dom` to parse [Zooqle.com's](https://zooqle.com/) OpenSearch XML feeds and display the results. Draws inspiration from the [Extratorrent's](https://github.com/qbittorrent/qBittorrent/blob/master/src/searchengine/nova/engines/extratorrent.py) search plugin.
 Follows the [search plugin guidlines](https://github.com/qbittorrent/qBittorrent/wiki/How-to-write-a-search-plugin) for writing qBittorrent Search Plugins.
