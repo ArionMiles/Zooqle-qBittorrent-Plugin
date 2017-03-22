@@ -1,6 +1,6 @@
-# VERSION: 1.00
-# AUTHOR: Arion_Miles (https://github.com/ArionMiles/)
-# LICENSE: MIT License
+#VERSION: 1.00
+#AUTHOR: Arion_Miles (https://github.com/ArionMiles/)
+#LICENSE: MIT License
 from xml.dom import minidom
 from novaprinter import prettyPrinter
 from helpers import download_file
