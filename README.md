@@ -10,7 +10,7 @@ Install the plugin by:
 Or by manually copying the `zooqle.py` to the following location:
   * Linux: `~/.local/share/data/qBittorrent/nova/engines/zooqle.py`
   * Mac: `~/Library/Application Support/qBittorrent/nova/engines/zooqle.py`
-  * Windows: `C:\Documents and Settings\%USERPROFILE%\Local Settings\Application Data\qBittorrent\nova\engines\zooqle.py`
+  * Windows: `C:\Users\%USERPROFILE%\AppData\Local\qBittorrent\nova\engines\zooqle.py`
 
 # License
 MIT License. See LICENSE file.
