@@ -1,31 +1,37 @@
-#VERSION: 1.00
+#VERSION: 1.10
 #AUTHOR: Arion_Miles (https://github.com/ArionMiles/)
 #LICENSE: MIT License
 from xml.dom import minidom
 from novaprinter import prettyPrinter
-from helpers import download_file
-user_agent = 'Mozilla/5.0 (X11; Linux i686; rv:38.0) Gecko/20100101 Firefox/38.0'
-headers    = {'User-Agent': user_agent}
+from helpers import download_file 
+from io import StringIO
+import gzip
 
-import urllib2, StringIO, gzip
-def retrieve_url(url):
+try:
+    from urllib2 import urlopen, Request, URLError
+except ImportError:
+    from urllib.request import urlopen, Request, URLError
+    
+def retrieve_url_gzip(url):
     """ Return the content of the url page as a string """
-    req = urllib2.Request(url, headers = headers)
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:38.0) Gecko/20100101 Firefox/38.0'}
+    req = Request(url, headers = headers)
     try:
-        response = urllib2.urlopen(req)
-    except urllib2.URLError as errno:
+        response = urlopen(req)
+    except URLError as errno:
         print(" ".join(("Connection error:", str(errno.reason))))
+        print(" ".join(("URL:", url)))
         return ""
     dat = response.read()
     # Check if it is gzipped
     if dat[:2] == '\037\213':
         # Data is gzip encoded, decode it
-        compressedstream = StringIO.StringIO(dat)
+        compressedstream = StringIO(dat)
         gzipper = gzip.GzipFile(fileobj=compressedstream)
         extracted_data = gzipper.read()
         dat = extracted_data
-    info = response.info()
-    return dat
+        return dat
+    return dat #new line
 
 class zooqle(object):
     """ Search engine class """
@@ -46,25 +52,41 @@ class zooqle(object):
         print(download_file(info))
 
     def search(self, what, cat="all"):
-        """ Performs search"""
-        query = "".join((self.url, "/search?q=", what, "+category%3A", self.supported_categories[cat], "&fmt=rss"))
-        response = retrieve_url(query)
-
-        xmldoc = minidom.parseString(response)
-        itemlist = xmldoc.getElementsByTagName('item')
-        for item in itemlist:
-            zooqle_dict = zooqle_dict = {"engine_url" : self.url}
-            zooqle_dict['name'] = item.getElementsByTagName('title')[0].childNodes[0].data
-            zooqle_dict["link"] = item.getElementsByTagName('enclosure')[0].attributes['url'].value
-            zooqle_dict["desc_link"] = item.getElementsByTagName('link')[0].childNodes[0].data
-            zooqle_dict["size"] = item.getElementsByTagName('enclosure')[0].attributes['length'].childNodes[0].data
-            zooqle_dict["leech"] = item.getElementsByTagName('torrent:peers')[0].childNodes[0].data
-            if not zooqle_dict["leech"].isdigit():
-                zooqle_dict["leech"] = ''
-            zooqle_dict["seeds"] = item.getElementsByTagName('torrent:seeds')[0].childNodes[0].data
-            if not zooqle_dict["seeds"].isdigit():
-                zooqle_dict["seeds"] = ''
-
-            prettyPrinter(zooqle_dict)
-
+        """ Performs search """
+        page = 1
+        while page < 11:
+            query = "".join((self.url, "/search?q=", what, "+category%3A", self.supported_categories[cat], "&fmt=rss"))
+            if( page>1 ):
+                query = query + "&pg=" + str (page)
+            response = retrieve_url_gzip(query)
+            xmldoc = minidom.parseString(response)
+            itemlist = xmldoc.getElementsByTagName('item')
+            if( len(itemlist ) ==0):
+                return
+            for item in itemlist:
+                zooqle_dict = zooqle_dict = {"engine_url" : self.url}
+                size = item.getElementsByTagName('enclosure')[0].attributes['length'].childNodes[0].data
+                zooqle_dict['name'] = item.getElementsByTagName('title')[0].childNodes[0].data
+                if(size=="0"):
+                    zooqle_dict["link"] = item.getElementsByTagName('torrent:magnetURI')[0].childNodes[0].data
+                else:
+                    zooqle_dict["link"] = item.getElementsByTagName('enclosure')[0].attributes['url'].value  
+                
+                
+                zooqle_dict["desc_link"] = item.getElementsByTagName('link')[0].childNodes[0].data
+                zooqle_dict["size"] = size
+                
+                zooqle_dict["leech"] = item.getElementsByTagName('torrent:peers')[0].childNodes[0].data
+                if not zooqle_dict["leech"].isdigit():
+                    zooqle_dict["leech"] = ''
+                zooqle_dict["seeds"] = item.getElementsByTagName('torrent:seeds')[0].childNodes[0].data
+                if not zooqle_dict["seeds"].isdigit():
+                    zooqle_dict["seeds"] = ''
+                prettyPrinter(zooqle_dict)
+            totalResultVal  = xmldoc.getElementsByTagName('opensearch:totalResults')[0].childNodes[0].nodeValue
+            startIndex  = xmldoc.getElementsByTagName('opensearch:startIndex')[0].childNodes[0].nodeValue
+            itemsPerPage = xmldoc.getElementsByTagName('opensearch:itemsPerPage')[0].childNodes[0].nodeValue
+            if( ( int(startIndex)  + int(itemsPerPage) > int( totalResultVal ))):
+                return
+            page += 1
         return
